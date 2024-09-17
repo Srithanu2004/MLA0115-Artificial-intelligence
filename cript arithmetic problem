@@ -1,0 +1,38 @@
+from itertools import permutations
+
+def is_valid_solution(s, e, n, d, m, o, r, y):
+    # Convert letters to corresponding digits
+    send = s * 1000 + e * 100 + n * 10 + d
+    more = m * 1000 + o * 100 + r * 10 + e
+    money = m * 10000 + o * 1000 + n * 100 + e * 10 + y
+
+    # Check if the equation holds
+    return send + more == money
+
+def solve_cryptarithmetic():
+    # Iterate over all permutations of digits (0-9) taken 8 at a time
+    for perm in permutations(range(10), 8):
+        s, e, n, d, m, o, r, y = perm
+        
+        # Check if the first digit of MONEY is zero (not allowed in valid solutions)
+        if m == 0:
+            continue
+        
+        # Check if the solution is valid
+        if is_valid_solution(s, e, n, d, m, o, r, y):
+            return s, e, n, d, m, o, r, y
+
+    return None
+
+def print_solution(solution):
+    if solution:
+        s, e, n, d, m, o, r, y = solution
+        print(f"SEND = {s}{e}{n}{d}")
+        print(f"MORE = {m}{o}{r}{e}")
+        print(f"MONEY = {m}{o}{n}{e}{y}")
+    else:
+        print("No solution exists.")
+
+if __name__ == "__main__":
+    solution = solve_cryptarithmetic()
+    print_solution(solution)
