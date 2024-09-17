@@ -1,0 +1,56 @@
+from collections import deque
+
+def is_valid_state(m1, c1, m2, c2):
+    # Check if state is valid: no group of missionaries is outnumbered by cannibals
+    if (m1 < 0 or c1 < 0 or m2 < 0 or c2 < 0 or
+        (m1 > 0 and m1 < c1) or
+        (m2 > 0 and m2 < c2)):
+        return False
+    return True
+
+def bfs_solver():
+    # Initial state
+    initial_state = (3, 3, 0, 0, True)  # (Missionaries on left, Cannibals on left, Missionaries on right, Cannibals on right, Boat on left)
+    goal_state = (0, 0, 3, 3, False)
+    queue = deque([(initial_state, [])])
+    visited = set()
+
+    while queue:
+        (m1, c1, m2, c2, boat_on_left), path = queue.popleft()
+        
+        # Check if we reached the goal
+        if (m1, c1, m2, c2, boat_on_left) == goal_state:
+            return path + [(m1, c1, m2, c2, boat_on_left)]
+
+        # Generate all possible moves
+        for m_move in range(3):
+            for c_move in range(3):
+                if 1 <= m_move + c_move <= 2:  # Boat can carry 1 or 2 people
+                    if boat_on_left:
+                        new_m1, new_c1 = m1 - m_move, c1 - c_move
+                        new_m2, new_c2 = m2 + m_move, c2 + c_move
+                    else:
+                        new_m1, new_c1 = m1 + m_move, c1 + c_move
+                        new_m2, new_c2 = m2 - m_move, c2 - c_move
+                    
+                    new_state = (new_m1, new_c1, new_m2, new_c2, not boat_on_left)
+                    
+                    if is_valid_state(new_m1, new_c1, new_m2, new_c2) and new_state not in visited:
+                        visited.add(new_state)
+                        queue.append((new_state, path + [(m1, c1, m2, c2, boat_on_left)]))
+
+    return None
+
+def print_solution(path):
+    if path:
+        print("Solution found:")
+        for state in path:
+            m1, c1, m2, c2, boat_on_left = state
+            print(f"Left Bank: {m1} Missionaries, {c1} Cannibals | Right Bank: {m2} Missionaries, {c2} Cannibals | Boat on {'Left' if boat_on_left else 'Right'}")
+    else:
+        print("No solution exists.")
+
+if __name__ == "__main__":
+    solution_path = bfs_solver()
+    print_solution(solution_path)
+
